@@ -1,0 +1,115 @@
+# Claude Code Configuration for Automatic Issue Processing
+# このファイルはClaude Codeの自動実行動作をカスタマイズするための設定ファイルです
+
+# 自動実行の設定
+auto_execution:
+  # 新しいissueが作成された際の自動実行を有効にする
+  enabled: true
+  
+  # 自動実行をスキップするissueラベル（これらのラベルが付いているissueは自動実行されません）
+  skip_labels:
+    - "manual-only"
+    - "no-automation"
+    - "discussion"
+    - "question"
+  
+  # 自動実行を強制するissueラベル（これらのラベルが付いていると必ず自動実行されます）
+  force_labels:
+    - "auto-implement"
+    - "bug"
+    - "enhancement"
+
+# Claude Codeの動作設定
+claude_behavior:
+  # 使用するモデル（デフォルト: claude-3-5-sonnet）
+  model: "claude-3-5-sonnet"
+  
+  # カスタム指示（issue処理時の基本方針）
+  custom_instructions: |
+    あなたは経験豊富なソフトウェアエンジニアとして、GitHubのissueに基づいて高品質なコード実装を行います。
+    以下のガイドラインに従ってください：
+
+    ## 分析フェーズ
+    1. issueのタイトルと説明を詳細に分析
+    2. 要件の明確化と技術的制約の特定
+    3. 既存コードベースとの整合性確認
+
+    ## 実装フェーズ
+    1. 最小限の変更で最大の効果を目指す
+    2. セキュリティとパフォーマンスを重視
+    3. テスタブルで保守しやすいコードを書く
+    4. 適切なエラーハンドリングを実装
+
+    ## 品質保証フェーズ
+    1. 単体テストと統合テストを作成
+    2. コードレビューの観点で自己チェック
+    3. ドキュメントの更新
+
+    ## コミュニケーション
+    1. 実装内容の要約をわかりやすく説明
+    2. 技術的判断の根拠を明記
+    3. 追加作業の提案や制約事項を共有
+
+# 通知設定
+notifications:
+  # 成功時の通知メッセージをカスタマイズ
+  success_message_template: |
+    ## ✅ 自動実装完了
+    
+    Issue の内容を分析し、以下の作業を完了しました：
+    
+    **実装内容**:
+    {implementation_summary}
+    
+    **技術的判断**:
+    {technical_decisions}
+    
+    **確認事項**:
+    - 作成されたPRの内容確認
+    - テストの実行結果確認
+    - 追加修正の必要性検討
+  
+  # エラー時の通知メッセージをカスタマイズ
+  error_message_template: |
+    ## ⚠️ 自動実装エラー
+    
+    申し訳ございませんが、自動実装中にエラーが発生しました。
+    
+    **推奨対応**:
+    1. ワークフロー実行ログの確認
+    2. issue内容の明確化
+    3. `@claude` メンションでの手動実行
+
+# 拡張設定（将来的な他のAIツール連携用）
+extensions:
+  # 他のAIツールとの連携設定
+  ai_tools:
+    - name: "claude-code"
+      enabled: true
+      priority: 1
+    # 将来的に他のツールを追加可能
+    # - name: "other-ai-tool"
+    #   enabled: false
+    #   priority: 2
+  
+  # カスタムフックス（前処理・後処理）
+  hooks:
+    pre_execution:
+      - name: "validate_issue_format"
+        enabled: true
+    post_execution:
+      - name: "quality_check"
+        enabled: true
+      - name: "security_scan"
+        enabled: false
+
+# デバッグ・ログ設定
+debug:
+  # 詳細ログの出力レベル
+  log_level: "info"  # debug, info, warn, error
+  
+  # デバッグ情報をissueコメントに含める
+  include_debug_info: false
+  
+  # 実行統計の記録
+  collect_metrics: true
